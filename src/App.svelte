@@ -57,6 +57,9 @@ edit this program or refresh to get a random example.
   <a target="_blank" href="//github.com/gatlin/precursor-ts">
     more info on github.
   </a>
+  <a target="_blank" href="//github.com/gatlin/precursor-site">
+    source for this site.
+  </a>
 </p>
 <select bind:value={which} on:blur={handle_select}>
   {#each sample_programs as p}
