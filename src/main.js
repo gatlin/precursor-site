@@ -5,7 +5,6 @@ import { CESKM, parse_cbpv } from "precursor-ts";
 class CustomMachine extends CESKM {
   constructor(control) { super(control); }
   primop(op_sym, args) {
-    console.log('primop', op_sym);
     switch (op_sym) {
       case 'prim-mod': {
         if ('NumV' === args[0].tag && 'NumV' === args[1].tag) {
@@ -39,7 +38,7 @@ const app = new App({
       window.location.hash = ''; },
     save_program_to_hash: (value) => {
       window.location.hash = b64_encode(value); },
-    parse_cbpv,
+    parse: parse_cbpv,
     evaluate: (p) => {
       let res = new CustomMachine(p).run();
       if ('tag' in res) {

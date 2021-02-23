@@ -6,7 +6,7 @@
   export let preload;
   export let clear_hash;
   export let save_program_to_hash;
-  export let parse_cbpv;
+  export let parse;
   export let evaluate;
 
   let which;
@@ -22,21 +22,12 @@
       which = Math.floor(Math.random() * sample_programs.length);
       value = sample_programs.map(({ text }) => text)[which]; } });
 
-  const try_to_parse = (src) => {
-    let res = null;
-    try {
-      res = parse_cbpv(src);
-      _err = false; }
-    catch (e) {
-      res = `${e}`;
-      _err = true; }
-    return res; };
-
   const handle_eval = (event) => {
     save_program_to_hash(value);
-    result = try_to_parse(value);
-    if (!_err) {
-      result = evaluate(result); } };
+    try {
+      result = evaluate(parse(value)); }
+    catch (e) {
+      result = JSON.stringify(e); } };
 
   const handle_reset = (event) => {
     clear_hash();
