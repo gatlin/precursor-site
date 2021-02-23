@@ -1,11 +1,8 @@
-*Looking for a shareable component template? Go here --> [sveltejs/component-template](https://github.com/sveltejs/component-template)*
-
----
-
 # precursor-site
 
 The source code for the [precursor demo website][precursorsite].
-[More information about precursor][precursorgithub].
+
+[More information about the language *precursor*][precursorgithub].
 
 [precursorsite]: https://niltag.net/code/precursor
 [precursorgithub]: https://github.com/gatlin/precursor-ts
