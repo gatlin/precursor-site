@@ -1,0 +1,6 @@
+[submodule "precursor-ts"]
+	path = precursor-ts
+	url = https://github.com/gatlin/precursor-ts
+[submodule "deps/precursor-ts"]
+	path = deps/precursor-ts
+	url = https://github.com/gatlin/precursor-ts.git
