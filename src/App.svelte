@@ -52,7 +52,7 @@ edit this program or refresh to get a random example.
     source for this site.
   </a>
 </p>
-<select bind:value={which} on:blur={handle_select}>
+<select bind:value={which} on:change={handle_select}>
   {#each sample_programs as p}
     <option value={p.id}>
     { `sample ${p.id + 1}` }
