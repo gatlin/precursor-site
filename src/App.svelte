@@ -14,6 +14,8 @@
   let _err = false;
   let result = "_____";
 
+  // $: value = value.replace(/\(\s*\\\s*\(/g, '(λ (');
+
   onMount(async () => {
     if (preload) {
       which = 0;

@@ -2,7 +2,7 @@ import App from './App.svelte';
 import * as sample_program_source from "./programs.json";
 import { CESKM, parse_cbpv } from "precursor-ts";
 
-class CustomMachine extends CESKM {
+class DemoMachine extends CESKM {
   constructor(control) { super(control); }
   primop(op_sym, args) {
     switch (op_sym) {
@@ -40,7 +40,7 @@ const app = new App({
       window.location.hash = b64_encode(value); },
     parse: parse_cbpv,
     evaluate: (p) => {
-      let res = new CustomMachine(p).run();
+      let res = new DemoMachine(p).run();
       if ('tag' in res) {
         switch (res.tag) {
           case 'NumV': return res.v.toString();

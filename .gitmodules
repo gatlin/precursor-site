@@ -4,3 +4,4 @@
 [submodule "deps/precursor-ts"]
 	path = deps/precursor-ts
 	url = https://github.com/gatlin/precursor-ts.git
+	branch = main
