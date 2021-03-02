@@ -1,9 +1,25 @@
 import App from './App.svelte';
 import * as sample_program_source from "./programs.json";
-import { CESKM, parse_cbpv } from "precursor-ts";
+import { CESKM, parse_cbpv, haltk } from "precursor-ts";
+
+const clone = (a) => JSON.parse(JSON.stringify(a));
 
 class DemoMachine extends CESKM {
-  constructor(control) { super(control); }
+  get_result () { return this.result; }
+
+  * run_generator() {
+    let st = {
+      control: this.control,
+      environment: [],
+      store: {},
+      kontinuation: haltk(),
+      meta: [] };
+    while (!this.result) {
+      let res = this.step(clone(st));
+      if (!this.result) {
+        st = res;
+        yield st; } } }
+
   primop(op_sym, args) {
     switch (op_sym) {
       case 'prim-mod': {
@@ -40,7 +56,11 @@ const app = new App({
       window.location.hash = b64_encode(value); },
     parse: parse_cbpv,
     evaluate: (p) => {
-      let res = new DemoMachine(p).run();
+      let m = new DemoMachine(p);
+      for (let st of m.run_generator()) {
+        console.log(st);
+      }
+      let res = m.get_result();
       if ('tag' in res) {
         switch (res.tag) {
           case 'NumV': return res.v.toString();
