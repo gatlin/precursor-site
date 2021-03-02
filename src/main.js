@@ -8,12 +8,7 @@ class DemoMachine extends CESKM {
   get_result () { return this.result; }
 
   * run_generator() {
-    let st = {
-      control: this.control,
-      environment: [],
-      store: {},
-      kontinuation: haltk(),
-      meta: [] };
+    let st = this.make_initial_state();
     while (!this.result) {
       let res = this.step(clone(st));
       if (!this.result) {
