@@ -101,5 +101,39 @@
 "    list-1 ))",
 ")"
     ]
+  },
+  {
+    "id": 4,
+    "text_multiline": [
+"(letrec (",
+"  (load (λ () (shift k",
+"    (! (λ (l _) ((? l) k))))))",
+"",
+"  (save (λ (v) (shift k",
+"    (! (λ (_ s) ((? s) v k))))))",
+"",
+"  (return (λ (x) (shift k",
+"    (! (λ (_ _) (? x))))))",
+"",
+"  (run-state (λ (st comp)",
+"    (let handle (reset (? comp))",
+"    ((? handle)",
+"       (! (λ (k)",
+"         (let result (! (k st))",
+"         ((? run-state) st result))))",
+"       (! (λ (v k)",
+"         (let result (! (k _))",
+"         ((? run-state) v result))))))))",
+"",
+"  (incr-state (λ ()",
+"    (let n ((? load))",
+"    (let _ ((? save) (prim-add n 1))",
+"    (let result ((? load))",
+"    ((? return) result))))))",
+"  )",
+"((? run-state) 419 (! ((? incr-state))))",
+")"
+    ]
+
   }
 ]
