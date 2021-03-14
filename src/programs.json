@@ -4,7 +4,7 @@
     "text_multiline": [
 ";; Sample 1: Asynchronous coroutines from scratch",
 "; Precursor has no concept of generators or coroutines or streams, etc. ",
-"; With shift, reset, !, and ?, however, we implement them in 6 lines.",
+"; With shift, reset, !, and ?, however, we implement them below concisely.",
 "",
 "(letrec (",
 "  (yield (\\ (value) (shift k (! (\\ (p) ((? p) value k))))))",
