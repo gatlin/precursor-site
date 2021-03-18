@@ -44,7 +44,6 @@ const app = new App({
   props: {
     sample_programs,
     preload,
-    b64_encode,
     clear_hash: () => {
       window.location.hash = ''; },
     save_program_to_hash: (value) => {
@@ -60,6 +59,10 @@ const app = new App({
         switch (res.tag) {
           case 'NumV': return res.v.toString();
           case 'BoolV': return (res.v ? '#t' : '#f');
+          case 'StrV': return res.v;
+          case 'ObjV':
+          case 'ArrV':
+            return JSON.stringify(res.v);
           case 'ClosureV': {
             let exp = JSON.stringify(res.exp);
             let env = JSON.stringify(res.env);
