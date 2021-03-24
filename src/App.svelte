@@ -25,10 +25,13 @@
       value = sample_programs.map(({ text }) => text)[which]; } });
 
   const handle_eval = (event) => {
+    console.log("handle_eval called");
     save_program_to_hash(value);
+    console.log("saved program to hash");
     try {
       result = evaluate(parse(value)); }
     catch (e) {
+      console.error(e);
       result = JSON.stringify(e); } };
 
   const handle_reset = (event) => {

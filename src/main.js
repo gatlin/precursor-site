@@ -17,11 +17,11 @@ class DemoMachine extends CESKM {
 
   primop(op_sym, args) {
     switch (op_sym) {
-      case 'prim-mod': {
+      case 'prim:mod': {
         if ('NumV' === args[0].tag && 'NumV' === args[1].tag) {
           return { tag: 'NumV', v: args[0].v % args[1].v }; }
         break; }
-      case 'prim-xor': {
+      case 'prim:xor': {
         if ('BoolV' === args[0].tag && 'BoolV' === args[1].tag) {
           return { tag: 'BoolV', v: args[0].v ^ args[1].v }; }
         break; }
@@ -48,19 +48,24 @@ const app = new App({
       window.location.hash = ''; },
     save_program_to_hash: (value) => {
       window.location.hash = b64_encode(value); },
-    parse: parse_cbpv,
+    parse: (source) => {
+      let parsed = parse_cbpv(source);
+      console.log("parsed", parsed);
+      return parsed;
+    },
     evaluate: (p) => {
       let m = new DemoMachine(p);
       for (let st of m.run_generator()) {
         console.log(st);
       }
       let res = m.get_result();
+      console.log("res", res);
       if ('tag' in res) {
         switch (res.tag) {
           case 'NumV': return res.v.toString();
           case 'BoolV': return (res.v ? '#t' : '#f');
           case 'StrV': return res.v;
-          case 'ObjV':
+          case 'RecV':
           case 'ArrV':
             return JSON.stringify(res.v);
           case 'ClosureV': {
