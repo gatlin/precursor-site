@@ -18,12 +18,12 @@ class DemoMachine extends CESKM {
   primop(op_sym, args) {
     switch (op_sym) {
       case 'prim:mod': {
-        if ('NumV' === args[0].tag && 'NumV' === args[1].tag) {
-          return { tag: 'NumV', v: args[0].v % args[1].v }; }
+        if ('number' === args[0].tag && 'number' === args[1].tag) {
+          return { tag: 'number', v: args[0].v % args[1].v }; }
         break; }
       case 'prim:xor': {
-        if ('BoolV' === args[0].tag && 'BoolV' === args[1].tag) {
-          return { tag: 'BoolV', v: args[0].v ^ args[1].v }; }
+        if ('boolean' === args[0].tag && 'boolean' === args[1].tag) {
+          return { tag: 'boolean', v: args[0].v ^ args[1].v }; }
         break; }
       default: return super.primop(op_sym, args); }
     throw new Error(`invalid prim op: ${op_sym}`); } }
@@ -45,7 +45,7 @@ const app = new App({
     sample_programs,
     preload,
     clear_hash: () => {
-      window.location.hash = ''; },
+      window.location.hash = ""; },
     save_program_to_hash: (value) => {
       window.location.hash = b64_encode(value); },
     parse: (source) => {
@@ -60,29 +60,29 @@ const app = new App({
       }
       let res = m.get_result();
       console.log("res", res);
-      if ('tag' in res) {
+      if ("tag" in res) {
         switch (res.tag) {
-          case 'NumV': return res.v.toString();
-          case 'BoolV': return (res.v ? '#t' : '#f');
-          case 'StrV': return res.v;
-          case 'RecV':
-          case 'ArrV':
+          case "number": return res.v.toString();
+          case "boolean": return (res.v ? "#t" : "#f");
+          case "string": return res.v;
+          case "record":
+          case "array":
             return JSON.stringify(res.v);
-          case 'ClosureV': {
+          case "closure": {
             let exp = JSON.stringify(res.exp);
             let env = JSON.stringify(res.env);
             return `#<closure:${exp},${env}>`; }
-          case 'ContinuationV': {
+          case "continuation": {
             switch (res.kont.tag) {
-              case 'ArgK': {
+              case "arg": {
                 let args = JSON.stringify(res.kont.vs);
                 return `#<argk:${args}>`; }
-              case 'LetK': {
+              case "let": {
                 let sym = res.kont.sym;
                 let exp = JSON.stringify(res.kont.exp);
                 let env = JSON.stringify(res.kont.env);
                 return `#<letk:${sym},${exp},${env}>`; }
-              case 'HaltK': return `#<haltk>`;
+              case "top": return `#<haltk>`;
               default: throw new Error('illegal continuation value'); } }
           default:
             throw new Error(`illegal machine result :( ${JSON.stringify(res)}`); } }
