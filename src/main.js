@@ -1,6 +1,6 @@
 import App from './App.svelte';
 import * as sample_program_source from "./programs.json";
-import { CESKM, parse_cbpv, haltk } from "precursor-ts";
+import { CESKM, parse_cbpv, topk } from "precursor-ts";
 
 const clone = (a) => JSON.parse(JSON.stringify(a));
 
@@ -15,18 +15,125 @@ class DemoMachine extends CESKM {
         st = res;
         yield st; } } }
 
+  literal (v) {
+    if ("number" === typeof v
+     || "boolean" === typeof v
+     || null === v)
+      { return { v }; }
+    throw new Error(`${v} not a primitive value`);
+  }
+
   primop(op_sym, args) {
     switch (op_sym) {
-      case 'prim:mod': {
-        if ('number' === args[0].tag && 'number' === args[1].tag) {
-          return { tag: 'number', v: args[0].v % args[1].v }; }
-        break; }
-      case 'prim:xor': {
-        if ('boolean' === args[0].tag && 'boolean' === args[1].tag) {
-          return { tag: 'boolean', v: args[0].v ^ args[1].v }; }
-        break; }
-      default: return super.primop(op_sym, args); }
-    throw new Error(`invalid prim op: ${op_sym}`); } }
+      case "prim:mul": {
+        if (! ("v" in args[0]) || ! ("v" in args[1]))
+          { throw new Error(`arguments must be values`); }
+        if ("number" !== typeof args[0].v || "number" !== typeof args[1].v)
+          { throw new Error(`arguments must be numbers`); }
+        let result = args[0].v * args[1].v;
+        return { v: result };
+      }
+      case "prim:add": {
+        if (! ("v" in args[0]) || ! ("v" in args[1]))
+          { throw new Error(`arguments must be values`); }
+        if ("number" !== typeof args[0].v || "number" !== typeof args[1].v)
+          { throw new Error(`arguments must be numbers`); }
+        let result = args[0].v + args[1].v;
+        return { v: result };
+      }
+      case "prim:sub": {
+        if (! ("v" in args[0]) || ! ("v" in args[1]))
+          { throw new Error(`arguments must be values`); }
+        if ("number" !== typeof args[0].v || "number" !== typeof args[1].v)
+          { throw new Error(`arguments must be numbers`); }
+        let result = args[0].v - args[1].v;
+        return { v: result };
+      }
+      case "prim:eq": {
+        if (! ("v" in args[0]) || ! ("v" in args[1])) {
+          throw new Error(`arguments must be values`);
+        }
+        if (("number" !== typeof args[0].v || "number" !== typeof args[1].v)
+         && ("boolean" !== typeof args[0].v || "boolean" !== typeof args[1].v) ) {
+          throw new Error(`arguments must be numbers or booleans`);
+        }
+        let result = args[0].v === args[1].v;
+        return { v: result };
+      }
+      case "prim:not": {
+        if (! ("v" in args[0])) {
+          throw new Error(`argument must be a value`);
+        }
+        if ("boolean" !== typeof args[0].v) {
+          throw new Error(`argument must be a boolean`);
+        }
+        let result = !args[0].v;
+        return { v: result };
+      }
+      case "prim:lt": {
+        if (! ("v" in args[0]) || ! ("v" in args[1])) {
+          throw new Error(`arguments must be values`);
+        }
+        if ("number" !== typeof args[0].v || "number" !== typeof args[1].v) {
+          throw new Error(`arguments must be numbers`);
+        }
+        let result = args[0].v < args[1].v;
+        return { v: result };
+      }
+      case "prim:lte": {
+        if (! ("v" in args[0]) || ! ("v" in args[1])) {
+          throw new Error(`arguments must be values`);
+        }
+        if ("number" !== typeof args[0].v || "number" !== typeof args[1].v) {
+          throw new Error(`arguments must be numbers`);
+        }
+        let result = args[0].v <= args[1].v;
+        return { v: result };
+      }
+      case "prim:gt": {
+        if (! ("v" in args[0]) || ! ("v" in args[1])) {
+          throw new Error(`arguments must be values`);
+        }
+        if ("number" !== typeof args[0].v || "number" !== typeof args[1].v) {
+          throw new Error(`arguments must be numbers`);
+        }
+        let result = args[0].v > args[1].v;
+        return { v: result };
+      }
+      case "prim:gte": {
+        if (! ("v" in args[0]) || ! ("v" in args[1])) {
+          throw new Error(`arguments must be values`);
+        }
+        if ("number" !== typeof args[0].v || "number" !== typeof args[1].v) {
+          throw new Error(`arguments must be numbers`);
+        }
+        let result = args[0].v >= args[1].v;
+        return { v: result };
+      }
+      case "prim:and": {
+        if (! ("v" in args[0]) || ! ("v" in args[1])) {
+          throw new Error(`arguments must be values`);
+        }
+        if ("boolean" !== typeof args[0].v || "boolean" !== typeof args[1].v) {
+          throw new Error(`arguments must be booleans`);
+        }
+        let result = args[0].v && args[1].v;
+        return { v: result };
+      }
+      case "prim:or": {
+        if (! ("v" in args[0]) || ! ("v" in args[1])) {
+          throw new Error(`arguments must be values`);
+        }
+        if ("boolean" !== typeof args[0].v || "boolean" !== typeof args[1].v) {
+          throw new Error(`arguments must be booleans`);
+        }
+        let result = args[0].v || args[1].v;
+        return { v: result };
+      }
+      default: return super.primop(op_sym, args);
+    }
+  }
+}
 
 const b64_decode = s => Buffer.from(s, 'base64').toString('ascii');
 const b64_encode = s => Buffer.from(s).toString('base64');
@@ -60,33 +167,12 @@ const app = new App({
       }
       let res = m.get_result();
       console.log("res", res);
-      if ("tag" in res) {
-        switch (res.tag) {
-          case "number": return res.v.toString();
-          case "boolean": return (res.v ? "#t" : "#f");
-          case "string": return res.v;
-          case "record":
-          case "array":
-            return JSON.stringify(res.v);
-          case "closure": {
-            let exp = JSON.stringify(res.exp);
-            let env = JSON.stringify(res.env);
-            return `#<closure:${exp},${env}>`; }
-          case "continuation": {
-            switch (res.kont.tag) {
-              case "arg": {
-                let args = JSON.stringify(res.kont.vs);
-                return `#<argk:${args}>`; }
-              case "let": {
-                let sym = res.kont.sym;
-                let exp = JSON.stringify(res.kont.exp);
-                let env = JSON.stringify(res.kont.env);
-                return `#<letk:${sym},${exp},${env}>`; }
-              case "top": return `#<haltk>`;
-              default: throw new Error('illegal continuation value'); } }
-          default:
-            throw new Error(`illegal machine result :( ${JSON.stringify(res)}`); } }
-      else {
-        throw new Error(`illegal machine result ${JSON.stringify(res)}`); } } } });
+      if ("v" in res)
+        { return JSON.stringify(res.v); }
+      else
+        { return JSON.stringify(res); }
+    }
+  }
+});
 
 export default app;

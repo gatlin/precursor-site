@@ -114,43 +114,5 @@
 "    list-1 ))",
 ")"
     ]
-  },
-  {
-    "id": 4,
-    "text_multiline": [
-"(letrec (",
-"  ;; effect handlers from scratch!",
-"  ; load a dynamic state value",
-"  (load (λ () (shift k",
-"    (! (λ (f) ((? (prim:record-get \"load\" f)) k))))))",
-"  ; ... and save a dynamic state value",
-"  (save (λ (v) (shift k",
-"    (! (λ (f) ((? (prim:record-get \"save\" f)) v k))))))",
-"",
-"  (return (λ (x) (shift k",
-"    (! (λ (_) (? x))))))",
-"",
-"  ; implementation of the state effect handlers",
-"  (run-state (λ (st comp)",
-"    (let handle (reset (? comp))",
-"    ((? handle) (prim:record-new",
-"      \"load\" (! (λ (continue)",
-"               (let res (! (continue st))",
-"               ((? run-state) st res))))",
-"      \"save\" (! (λ (v continue)",
-"               (let res (! (continue _))",
-"               ((? run-state) v res)))))))))",
-"",
-"  ; finally, a state-ly demo",
-"  (increment-state (λ ()",
-"    (let n ((? load))",
-"    (let _ ((? save) (prim:add n 1))",
-"    (let n-plus-1 ((? load))",
-"    ((? return) n-plus-1))))))",
-")",
-"((? run-state) 419 (! ((? increment-state))))",
-")"
-    ]
-
   }
 ]
