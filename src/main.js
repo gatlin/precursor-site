@@ -23,9 +23,9 @@ class DemoMachine extends CESKM {
     throw new Error(`${v} not a primitive value`);
   }
 
-  primop(op_sym, args) {
+  op(op_sym, args) {
     switch (op_sym) {
-      case "prim:mul": {
+      case "op:mul": {
         if (! ("v" in args[0]) || ! ("v" in args[1]))
           { throw new Error(`arguments must be values`); }
         if ("number" !== typeof args[0].v || "number" !== typeof args[1].v)
@@ -33,7 +33,7 @@ class DemoMachine extends CESKM {
         let result = args[0].v * args[1].v;
         return { v: result };
       }
-      case "prim:add": {
+      case "op:add": {
         if (! ("v" in args[0]) || ! ("v" in args[1]))
           { throw new Error(`arguments must be values`); }
         if ("number" !== typeof args[0].v || "number" !== typeof args[1].v)
@@ -41,7 +41,7 @@ class DemoMachine extends CESKM {
         let result = args[0].v + args[1].v;
         return { v: result };
       }
-      case "prim:sub": {
+      case "op:sub": {
         if (! ("v" in args[0]) || ! ("v" in args[1]))
           { throw new Error(`arguments must be values`); }
         if ("number" !== typeof args[0].v || "number" !== typeof args[1].v)
@@ -49,7 +49,7 @@ class DemoMachine extends CESKM {
         let result = args[0].v - args[1].v;
         return { v: result };
       }
-      case "prim:eq": {
+      case "op:eq": {
         if (! ("v" in args[0]) || ! ("v" in args[1])) {
           throw new Error(`arguments must be values`);
         }
@@ -60,7 +60,7 @@ class DemoMachine extends CESKM {
         let result = args[0].v === args[1].v;
         return { v: result };
       }
-      case "prim:not": {
+      case "op:not": {
         if (! ("v" in args[0])) {
           throw new Error(`argument must be a value`);
         }
@@ -70,7 +70,7 @@ class DemoMachine extends CESKM {
         let result = !args[0].v;
         return { v: result };
       }
-      case "prim:lt": {
+      case "op:lt": {
         if (! ("v" in args[0]) || ! ("v" in args[1])) {
           throw new Error(`arguments must be values`);
         }
@@ -80,7 +80,7 @@ class DemoMachine extends CESKM {
         let result = args[0].v < args[1].v;
         return { v: result };
       }
-      case "prim:lte": {
+      case "op:lte": {
         if (! ("v" in args[0]) || ! ("v" in args[1])) {
           throw new Error(`arguments must be values`);
         }
@@ -90,7 +90,7 @@ class DemoMachine extends CESKM {
         let result = args[0].v <= args[1].v;
         return { v: result };
       }
-      case "prim:gt": {
+      case "op:gt": {
         if (! ("v" in args[0]) || ! ("v" in args[1])) {
           throw new Error(`arguments must be values`);
         }
@@ -100,7 +100,7 @@ class DemoMachine extends CESKM {
         let result = args[0].v > args[1].v;
         return { v: result };
       }
-      case "prim:gte": {
+      case "op:gte": {
         if (! ("v" in args[0]) || ! ("v" in args[1])) {
           throw new Error(`arguments must be values`);
         }
@@ -110,7 +110,7 @@ class DemoMachine extends CESKM {
         let result = args[0].v >= args[1].v;
         return { v: result };
       }
-      case "prim:and": {
+      case "op:and": {
         if (! ("v" in args[0]) || ! ("v" in args[1])) {
           throw new Error(`arguments must be values`);
         }
@@ -120,7 +120,7 @@ class DemoMachine extends CESKM {
         let result = args[0].v && args[1].v;
         return { v: result };
       }
-      case "prim:or": {
+      case "op:or": {
         if (! ("v" in args[0]) || ! ("v" in args[1])) {
           throw new Error(`arguments must be values`);
         }
@@ -130,7 +130,7 @@ class DemoMachine extends CESKM {
         let result = args[0].v || args[1].v;
         return { v: result };
       }
-      default: return super.primop(op_sym, args);
+      default: return super.op(op_sym, args);
     }
   }
 }
