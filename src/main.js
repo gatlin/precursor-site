@@ -1,6 +1,6 @@
 import App from './App.svelte';
 import * as sample_program_source from "./programs.json";
-import { CESKM, parse_cbpv, topk } from "precursor-ts";
+import { CESKM, parse_cbpv, topk, scalar } from "precursor-ts";
 
 const clone = (a) => JSON.parse(JSON.stringify(a));
 
@@ -18,6 +18,7 @@ class DemoMachine extends CESKM {
   literal (v) {
     if ("number" === typeof v
      || "boolean" === typeof v
+     || "string" === typeof v
      || null === v)
       { return { v }; }
     throw new Error(`${v} not a primitive value`);
@@ -33,6 +34,16 @@ class DemoMachine extends CESKM {
         let result = args[0].v * args[1].v;
         return { v: result };
       }
+
+      case "op:div": {
+        if (! ("v" in args[0]) || ! ("v" in args[1]))
+        { throw new Error(`arguments must be values`); }
+        if ("number" !== typeof args[0].v || "number" !== typeof args[1].v)
+        { throw new Error(`arguments must be numbers`); }
+        let result = args[0].v / args[1].v;
+        return { v: result };
+      }
+
       case "op:add": {
         if (! ("v" in args[0]) || ! ("v" in args[1]))
           { throw new Error(`arguments must be values`); }
@@ -54,7 +65,9 @@ class DemoMachine extends CESKM {
           throw new Error(`arguments must be values`);
         }
         if (("number" !== typeof args[0].v || "number" !== typeof args[1].v)
-         && ("boolean" !== typeof args[0].v || "boolean" !== typeof args[1].v) ) {
+            && ("boolean" !== typeof args[0].v || "boolean" !== typeof args[1].v)
+            && ("string" !== typeof args[0].v || "string" !== typeof args[1].v)
+           ) {
           throw new Error(`arguments must be numbers or booleans`);
         }
         let result = args[0].v === args[1].v;
@@ -130,6 +143,56 @@ class DemoMachine extends CESKM {
         let result = args[0].v || args[1].v;
         return { v: result };
       }
+     case "op:concat": {
+        if (! ("v" in args[0]) || ! ("v" in args[1])) {
+          throw new Error(`arguments must be values`);
+        }
+        if ("string" !== typeof args[0].v || "string" !== typeof args[1].v) {
+          throw new Error(`arguments must be strings`);
+        }
+        const result = args[0].v.concat(args[1].v);
+        return scalar(result);
+      }
+      case "op:strlen": {
+        if (! ("v" in args[0])) {
+          throw new Error(`argument must be a value`);
+        }
+        if ("string" !== typeof args[0].v) {
+          throw new Error(`argument must be a string`);
+        }
+        const result = args[0].v.length;
+        return scalar(result);
+      }
+      case "op:substr": {
+        if (! ("v" in args[0]) || ! ("v" in args[1]) || ! ("v" in args[2])) {
+          throw new Error(`arguments must be values`);
+        }
+        if ("string" !== typeof args[0].v || "number" !== typeof args[1].v
+           || "number" !== typeof args[2].v) {
+          throw new Error(`arguments must be strings`);
+        }
+        const result = args[0].v.slice(args[1].v,args[2].v);
+        return scalar(result);
+      }
+      case "op:str->num": {
+        if (! ("v" in args[0])) {
+          throw new Error(`argument must be a value`);
+        }
+        if ("string" !== typeof args[0].v) {
+          throw new Error(`argument must be a string: ${args[0].v}`);
+        }
+        return scalar(parseInt(args[0].v));
+      }
+      case "op:num->str": {
+        if (! ("v" in args[0])) {
+          throw new Error(`argument must be a value`);
+        }
+        if ("number" !== typeof args[0].v) {
+          throw new Error(`argument must be a number: ${args[0].v}`);
+        }
+        return scalar((args[0].v).toString());
+      }
+
       default: return super.op(op_sym, args);
     }
   }
@@ -139,7 +202,7 @@ const b64_decode = s => Buffer.from(s, 'base64').toString('ascii');
 const b64_encode = s => Buffer.from(s).toString('base64');
 
 let sample_programs = sample_program_source['default'].
-  map(({ id, text_multiline }) => ({ id, text: text_multiline.join('\n') }));
+  map(({ id, text_multiline, byline }) => ({ id, text: text_multiline.join('\n'), byline }));
 
 let preload = null;
 let url_hash = window.location.hash.substr(1);

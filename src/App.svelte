@@ -1,7 +1,7 @@
 <script>
   import { onMount } from "svelte";
 
-  // prop: array of objects { id: number, text: string }
+  // prop: array of objects { id: number, text: string, byline: string }
   export let sample_programs;
   export let preload;
   export let clear_hash;
@@ -60,7 +60,7 @@ edit this program or refresh to get a random example.
 <select bind:value={which} on:change={handle_select}>
   {#each sample_programs as p}
     <option value={p.id}>
-    { `sample ${p.id + 1}` }
+    { `sample ${p.id + 1} - ${p.byline}` }
     </option>
   {/each}
 </select>
