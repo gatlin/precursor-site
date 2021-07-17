@@ -44,8 +44,8 @@
       "      (op:mul 2 three-then-six)))",
       "    (op:add twelve 1))))",
       ")",
-      " (let n ((? thirteen))",
-      "  (op:concat \"Result: \" (! (op:num->str n))))",
+      "(let n ((? thirteen))",
+      "(op:concat \"Result: \" (! (op:num->str n))))",
       ")"
     ]
   },
