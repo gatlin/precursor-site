@@ -49,7 +49,7 @@
 <h1>{result}</h1>
 {/if}
 <p>
-edit this program or refresh to get a random example.
+edit this program or select another example.
   <a target="_blank" href="//github.com/gatlin/precursor-ts">
     more info on github.
   </a>
