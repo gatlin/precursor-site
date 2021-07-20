@@ -7,13 +7,14 @@ const clone = (a) => JSON.parse(JSON.stringify(a));
 class DemoMachine extends CESKM {
   get_result () { return this.result; }
 
-  * run_generator() {
-    let st = this.make_initial_state();
-    while (!this.result) {
-      let res = this.step(clone(st));
-      if (!this.result) {
-        st = res;
-        yield st; } } }
+  * run_generator(program) {
+    let st = this.make_initial_state(parse_cbpv(program));
+    let iter = this.step(st);
+    while (!iter.done) {
+      st = iter.value;
+      yield st;
+      iter = this.step(st);
+    }}
 
   literal (v) {
     if ("number" === typeof v
@@ -224,8 +225,8 @@ const app = new App({
       return parsed;
     },
     evaluate: (p) => {
-      let m = new DemoMachine(p);
-      for (let st of m.run_generator()) {
+      let m = new DemoMachine();
+      for (let st of m.run_generator(p)) {
         console.log(st);
       }
       let res = m.get_result();
